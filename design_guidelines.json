@@ -1,0 +1,167 @@
+{
+  "theme": "dark",
+  "archetype": "Performance Pro (SCADA Telemetry Edition)",
+  "typography": {
+    "font_families": {
+      "heading": "IBM Plex Sans",
+      "body": "IBM Plex Sans",
+      "mono": "JetBrains Mono"
+    },
+    "scales": {
+      "h1": "text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFFFF]",
+      "h2": "text-xl sm:text-2xl font-semibold tracking-tight text-[#FFFFFF]",
+      "h3": "text-lg sm:text-xl font-medium text-[#FFFFFF]",
+      "h4": "text-base font-medium text-[#FFFFFF]",
+      "body": "text-sm text-[#8799BA]",
+      "telemetry_value": "text-2xl sm:text-4xl font-mono font-bold text-[#FFFFFF]",
+      "labels": "text-xs font-semibold uppercase tracking-[0.1em] text-[#8799BA]"
+    },
+    "instructions": "Use IBM Plex Sans for general UI text and headings. Use JetBrains Mono exclusively for telemetry values, table data cells, log entries, and code/status readouts to enforce an industrial, precise look."
+  },
+  "colors": {
+    "background": {
+      "canvas": "#091628",
+      "card": "#0D1B3D",
+      "glass": "rgba(13, 27, 61, 0.85)"
+    },
+    "primary": {
+      "base": "#095FDF",
+      "hover": "#1A74F0",
+      "active": "#0748AB"
+    },
+    "accent": {
+      "vibration_signal": "#00B4D8",
+      "glow": "rgba(0, 180, 216, 0.4)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#8799BA",
+      "inverse": "#091628"
+    },
+    "status": {
+      "ok": "#2DC4B6",
+      "warning": "#F4A822",
+      "critical": "#C0392B",
+      "ok_bg": "rgba(45, 196, 182, 0.15)",
+      "warning_bg": "rgba(244, 168, 34, 0.15)",
+      "critical_bg": "rgba(192, 57, 43, 0.15)"
+    },
+    "border": {
+      "default": "rgba(135, 153, 186, 0.2)",
+      "focus": "#095FDF"
+    }
+  },
+  "spacing_and_layout": {
+    "grid_system": "Control Room Grid",
+    "container_padding": "p-4 sm:p-6",
+    "gap_strategy": "gap-4 sm:gap-6",
+    "border_radius": {
+      "card": "rounded-lg",
+      "button": "rounded-md",
+      "badge": "rounded-full"
+    },
+    "instructions": "Adopt a dense, data-rich layout characteristic of industrial SCADA interfaces. Every pixel must be utilized efficiently. Use strict grid alignments without jagged edges. The Plant Hierarchy Workspace should use a split layout with the tree sidebar occupying 25-30% of width and the tabbed workspace the remainder."
+  },
+  "components": {
+    "cards": {
+      "base": "bg-[#0D1B3D] border border-[#8799BA]/20 rounded-lg shadow-sm overflow-hidden",
+      "hover": "transition-all duration-200 hover:border-[#095FDF]/50",
+      "instructions": "Cards should feel flat and solid. Do not use glassmorphism on standard data cards or charts to maintain data legibility."
+    },
+    "tables": {
+      "header": "bg-[#091628] text-[#8799BA] text-xs uppercase tracking-wider font-semibold border-b border-[#8799BA]/20",
+      "row": "border-b border-[#8799BA]/10 hover:bg-[#8799BA]/5 transition-colors",
+      "cell": "text-sm text-[#FFFFFF] font-mono",
+      "instructions": "Use Shadcn Table components but customize with JetBrains Mono for data cells. Include status dot indicators using the telemetry status colors."
+    },
+    "buttons": {
+      "primary": "bg-[#095FDF] text-[#FFFFFF] hover:bg-[#1A74F0] font-semibold rounded-md transition-colors shadow-[0_0_10px_rgba(9,95,223,0.3)]",
+      "secondary": "bg-transparent border border-[#8799BA]/30 text-[#FFFFFF] hover:bg-[#8799BA]/10 rounded-md transition-colors",
+      "ghost": "bg-transparent text-[#8799BA] hover:text-[#FFFFFF] hover:bg-[#8799BA]/10 transition-colors"
+    },
+    "tabs": {
+      "list": "bg-[#091628] p-1 rounded-md border border-[#8799BA]/20",
+      "trigger": "data-[state=active]:bg-[#0D1B3D] data-[state=active]:text-[#00B4D8] text-[#8799BA] font-medium transition-all rounded-sm",
+      "instructions": "Tabs should have a clear active state using the Vibration Signal accent color (#00B4D8). Overide default Shadcn tab heights if necessary to fit the dense UI."
+    },
+    "tree_view": {
+      "node": "flex items-center py-1.5 px-2 rounded-md cursor-pointer text-sm text-[#8799BA] hover:bg-[#8799BA]/10 transition-colors",
+      "node_active": "bg-[#095FDF]/20 text-[#FFFFFF] font-medium border-l-2 border-[#095FDF]",
+      "guide_lines": "border-l border-[#8799BA]/20 ml-2 pl-2"
+    },
+    "glassmorphism": {
+      "global_nav": "sticky top-0 z-50 bg-[#0D1B3D]/80 backdrop-blur-xl border-b border-[#8799BA]/20",
+      "ai_flyout": "fixed right-0 top-0 h-full w-96 bg-[#0D1B3D]/90 backdrop-blur-2xl border-l border-[#8799BA]/30 shadow-2xl",
+      "instructions": "Apply glassmorphism strictly to floating or overarching navigational elements (Global Nav, AI Assistant Flyout). NEVER apply to charts or data tables."
+    },
+    "charts": {
+      "theme": "dark",
+      "colors": [
+        "#00B4D8",
+        "#2DC4B6",
+        "#F4A822",
+        "#C0392B",
+        "#095FDF"
+      ],
+      "grid_lines": "rgba(135, 153, 186, 0.1)",
+      "tooltip": "bg-[#0D1B3D] border border-[#8799BA]/30 text-[#FFFFFF] shadow-lg rounded-md",
+      "instructions": "Use Recharts or Shadcn Charts. Set cartesian grids to low opacity (#8799BA/10). Donut chart must map Healthy to #2DC4B6, Warning to #F4A822, Critical to #C0392B. Trend/FFT line charts should heavily feature #00B4D8 (cyan) for signal traces."
+    },
+    "forms": {
+      "input": "bg-[#091628] border border-[#8799BA]/30 text-[#FFFFFF] rounded-md focus:ring-1 focus:ring-[#095FDF] focus:border-[#095FDF] transition-all",
+      "label": "text-xs font-semibold text-[#8799BA] mb-1.5 uppercase tracking-wide",
+      "instructions": "For the Maintenance Log Form, use a strict two-column grid. Ensure form controls have sufficient contrast against the deep navy background."
+    },
+    "scrollbar": {
+      "track": "bg-[#091628]",
+      "thumb": "bg-[#8799BA]/30 hover:bg-[#8799BA]/50 rounded-full",
+      "width": "w-1.5 h-1.5",
+      "instructions": "Implement custom scrollbars globally to avoid unstyled browser defaults breaking the dark immersive theme. Do not use gutters."
+    }
+  },
+  "interactions_and_motion": {
+    "hover": "Subtle border color shifts and background tinting. Active elements glow slightly.",
+    "transitions": "Use fast, precise transitions (150ms-200ms) suitable for a performance-focused tool.",
+    "ai_flyout": "Slide in from the right edge with a smooth ease-out curve."
+  },
+  "accessibility": {
+    "contrast": "Ensure text against #0D1B3D and #091628 meets 4.5:1 ratio. The cyan (#00B4D8) and white text have excellent contrast.",
+    "focus_states": "All interactive elements must display a distinct focus ring: focus:ring-2 focus:ring-[#095FDF] focus:outline-none.",
+    "data_testid": "MANDATORY. Add data-testid attributes to all tabs, chart containers, form inputs, buttons, tree nodes, and table rows using kebab-case."
+  },
+  "media": {
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1555941911-2c0c77a44ea4",
+        "category": "background_abstract",
+        "description": "Close up of an industrial machine with a spiral design, can be used for login screen background or subtle texture."
+      },
+      {
+        "url": "https://images.pexels.com/photos/33531832/pexels-photo-33531832.jpeg",
+        "category": "motor_testing",
+        "description": "Close-up of hands using multimeter on motor wires, suitable for Maintenance Log headers or User profile default images."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1777019278142-b3b9e353a1fe?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MjJ8MHwxfHNlYXJjaHwzfHxzdGVlbCUyMHBsYW50JTIwZmFjdG9yeSUyMGludGVyaW9yfGVufDB8fHx8MTc4Mjc5OTcyNHww&ixlib=rb-4.1.0&q=85",
+        "category": "plant_environment",
+        "description": "Industrial complex interior with metal structures and pipes, good for Plant Hierarchy visual context."
+      },
+      {
+        "url": "https://images.pexels.com/photos/18471551/pexels-photo-18471551.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "category": "automation_machinery",
+        "description": "Advanced machinery showcasing robotic automation, suitable for feature or header images."
+      }
+    ],
+    "instructions_to_main_agent": "Utilize these URLs when images are needed in the UI. DO NOT use placeholder text or dummy image URLs. Apply appropriate overlays (e.g., bg-[#091628]/70) if text needs to be placed on top of these images."
+  },
+  "screens": {
+    "1_global_nav_shell": "Sticky top header (glassmorphism) + collapsible sidebar. Sidebar contains nav items. Content area expands/collapses based on sidebar state.",
+    "2_login": "Centered card on a dark immersive background (potentially using the abstract machine image with heavy dark overlay). Includes logo, username, password with eye toggle, remember me, forgot password.",
+    "3_overview_dashboard": "Control room layout. Features large Donut Motor Health chart, status counter cards (numeric with colored indicators), and a Recent Activity Log list with date-range filter.",
+    "4_multi_motor_telemetry_table": "Dense data table. Filters + sortable columns. Status dot indicators for health. Pagination at bottom.",
+    "5_plant_hierarchy_workspace": "Split layout. Left: Tree sidebar (Site -> Area -> Machine -> Sensor). Right: Tabbed workspace (Trend, FFT, Faults, Logs). Must include AI assistant flyout trigger.",
+    "6_maintenance_log_form": "Two-column form layout. Dropdowns, date picker, notes textarea. Clean, accessible inputs.",
+    "7_user_management": "Simple, clean data table for user roles and access.",
+    "8_grafana_insights": "Full width/height iframe container to embed external Grafana dashboards."
+  }
+}
