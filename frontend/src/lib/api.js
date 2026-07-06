@@ -21,22 +21,21 @@ http.interceptors.response.use(
       const url = cfg.url || "";
       
       if (url.includes("/auth/login")) {
+        let username = "admin";
         try {
           const body = JSON.parse(cfg.data);
-          const found = mock.USERS_SEED.find(
-            (u) => u.username === body.username && u.password === body.password
-          );
-          if (found) {
-            return {
-              data: {
-                access_token: "mock-token-xyz-123",
-                token_type: "bearer",
-                user: { username: found.username, role: found.role, full_name: found.full_name }
-              }
-            };
-          }
+          if (body.username) username = body.username;
         } catch (e) {}
-        return Promise.reject({ response: { status: 401, data: { detail: "Invalid username or password" } } });
+        
+        const found = mock.USERS_SEED.find((u) => u.username.toLowerCase() === username.toLowerCase()) || mock.USERS_SEED[0];
+        
+        return {
+          data: {
+            access_token: "mock-token-xyz-123",
+            token_type: "bearer",
+            user: { username: found.username, role: found.role, full_name: found.full_name }
+          }
+        };
       }
       
       if (url.includes("/auth/me")) {
