@@ -62,7 +62,7 @@ export default function Login() {
           />
           <div>
             <div className="text-xs uppercase tracking-[0.18em]" style={{ color: "var(--vg-muted)" }}>VangateAI</div>
-            <div className="text-lg font-semibold text-white">Vibration Portal</div>
+            <div className="text-lg font-semibold text-white">Vibration Analytics Platform</div>
           </div>
         </div>
 

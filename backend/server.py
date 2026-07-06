@@ -29,7 +29,7 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-app = FastAPI(title="VangateAI Vibration Portal")
+app = FastAPI(title="VangateAI Vibration Analytics Platform")
 api = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
 

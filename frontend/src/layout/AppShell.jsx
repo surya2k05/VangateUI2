@@ -46,7 +46,7 @@ export default function AppShell() {
           />
           <div className="font-semibold tracking-wide text-white">VangateAI</div>
           <div className="hidden sm:block text-xs font-mono ml-2" style={{ color: "var(--vg-muted)" }}>
-            / Vibration Portal
+            / Vibration Analytics Platform
           </div>
         </div>
 
