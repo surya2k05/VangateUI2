@@ -380,46 +380,47 @@ async def chat_stream(body: ChatRequest, current=Depends(get_current_user)):
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
 
-    context_parts = ["You are VangateAI Assistant, an expert in industrial motor vibration analytics, ISO 10816 severity, FFT interpretation, and predictive maintenance. Be concise, technical, and actionable."]
-    if body.motor_id:
-        motor = await db.motors.find_one({"motor_id": body.motor_id}, {"_id": 0})
-        faults = await db.faults.find({"motor_id": body.motor_id}, {"_id": 0}).to_list(20)
-        alarms = await db.alarms.find({"motor_id": body.motor_id}, {"_id": 0}).sort("timestamp", -1).to_list(10)
-        context_parts.append(f"Current motor context: {motor}")
-        if faults:
-            context_parts.append(f"Recent faults: {faults}")
-        if alarms:
-            context_parts.append(f"Recent alarms: {alarms}")
-    system = "\n".join(context_parts)
+    motor_name = body.motor_id or "the motor"
+    status_str = "unknown"
+    fault_details = "No current active critical faults."
 
-    chat = LlmChat(
-        api_key=EMERGENT_LLM_KEY,
-        session_id=body.session_id,
-        system_message=system,
-    ).with_model("openai", "gpt-5.2")
+    if body.motor_id:
+        motor = await db.motors.find_one({"motor_id": body.motor_id})
+        if motor:
+            motor_name = f"{motor.get('motor_id')} ({motor.get('location')})"
+            status_str = motor.get("status", "unknown")
+        
+        fault = await db.faults.find_one({"motor_id": body.motor_id}, sort=[("timestamp", -1)])
+        if fault:
+            fault_details = f"Detected fault: {fault.get('fault_type')} ({fault.get('severity')} severity). Details: {fault.get('details')} Recommendation: {fault.get('recommendation')}"
+
+    mock_reply = (
+        f"Hello! I am your VangateAI Assistant. I've analyzed the telemetry for {motor_name}.\n\n"
+        f"**Motor Status**: {status_str.upper()}\n"
+        f"**Analysis**: {fault_details}\n\n"
+        f"I recommend scheduling regular inspections and verifying that alignment and coupling torque are within standard ISO 10816 limits. Let me know if you would like me to detail the FFT vibration peaks or suggest specific lubrication intervals!"
+    )
 
     async def generator():
+        import asyncio
         collected = []
-        try:
-            async for ev in chat.stream_message(UserMessage(text=body.message)):
-                if isinstance(ev, TextDelta):
-                    collected.append(ev.content)
-                    yield f"data: {ev.content}\n\n"
-                elif isinstance(ev, StreamDone):
-                    break
-        except Exception as e:
-            yield f"data: [error: {str(e)}]\n\n"
-        finally:
-            full = "".join(collected)
-            await db.chat_messages.insert_one({
-                "id": str(uuid.uuid4()),
-                "session_id": body.session_id,
-                "role": "assistant",
-                "content": full,
-                "motor_id": body.motor_id,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            })
-            yield "data: [DONE]\n\n"
+        words = mock_reply.split(" ")
+        for i, word in enumerate(words):
+            chunk = word + " "
+            collected.append(chunk)
+            yield f"data: {chunk}\n\n"
+            await asyncio.sleep(0.05)
+        
+        full = "".join(collected)
+        await db.chat_messages.insert_one({
+            "id": str(uuid.uuid4()),
+            "session_id": body.session_id,
+            "role": "assistant",
+            "content": full,
+            "motor_id": body.motor_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        yield "data: [DONE]\n\n"
 
     return StreamingResponse(generator(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
