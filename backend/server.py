@@ -24,7 +24,6 @@ DB_NAME = os.environ['DB_NAME']
 JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = os.environ['JWT_ALGORITHM']
 JWT_EXP_HOURS = int(os.environ['JWT_EXP_HOURS'])
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
