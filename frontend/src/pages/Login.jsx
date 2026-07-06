@@ -57,7 +57,7 @@ export default function Login() {
           <img
             src="https://cdn.phototourl.com/free/2026-07-06-b0e4955d-a8ab-447f-adcf-0c06c0afeac9.jpg"
             alt="VangateAI"
-            className="w-16 h-16 rounded-lg object-contain glow-primary"
+            className="w-24 h-24 rounded-lg object-cover glow-primary"
             data-testid="login-logo"
           />
           <div>

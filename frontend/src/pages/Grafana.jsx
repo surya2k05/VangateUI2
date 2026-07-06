@@ -1,6 +1,6 @@
 export default function Grafana() {
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col" data-testid="grafana-page">
+    <div className="h-[calc(100vh-5rem)] flex flex-col" data-testid="grafana-page">
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid var(--vg-border)", background: "#0A1932" }}>
         <div>
           <div className="text-xs uppercase tracking-[0.15em]" style={{ color: "var(--vg-muted)" }}>Insights</div>
