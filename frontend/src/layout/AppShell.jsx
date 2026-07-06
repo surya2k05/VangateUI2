@@ -37,11 +37,12 @@ export default function AppShell() {
         >
           <Menu size={18} />
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <img
             src="https://cdn.phototourl.com/free/2026-07-06-b0e4955d-a8ab-447f-adcf-0c06c0afeac9.jpg"
             alt="VangateAI"
-            className="w-16 h-16 rounded-md object-cover"
+            className="w-28 h-16 rounded-md object-contain"
+            style={{ background: "#091628" }}
             data-testid="header-logo"
           />
           <div className="font-semibold tracking-wide text-white">VangateAI</div>
