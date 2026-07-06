@@ -367,8 +367,6 @@ async def get_technicians():
 # ================== Chat (SSE Streaming) ==================
 @api.post("/chat/stream")
 async def chat_stream(body: ChatRequest, current=Depends(get_current_user)):
-    from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
-
     # Persist user message
     await db.chat_messages.insert_one({
         "id": str(uuid.uuid4()),
