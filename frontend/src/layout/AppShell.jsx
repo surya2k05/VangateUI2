@@ -39,7 +39,7 @@ export default function AppShell() {
         </button>
         <div className="flex items-center gap-2">
           <img
-            src="https://cdn.phototourl.com/free/2026-07-06-ae44d39c-3e10-4e0a-948a-289debddcf83.png"
+            src="https://cdn.phototourl.com/free/2026-07-06-b0e4955d-a8ab-447f-adcf-0c06c0afeac9.jpg"
             alt="VangateAI"
             className="w-11 h-11 rounded-md object-contain"
             data-testid="header-logo"
