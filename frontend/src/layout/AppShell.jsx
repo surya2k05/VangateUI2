@@ -11,9 +11,9 @@ const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard, end: true, tid: "nav-overview" },
   { to: "/motors", label: "Multi-Motor View", icon: Activity, tid: "nav-motors" },
   { to: "/maintenance", label: "Maintenance Log", icon: ClipboardList, tid: "nav-maintenance" },
-  { to: "/hierarchy", label: "Plant Hierarchy", icon: Network, tid: "nav-hierarchy" },
   { to: "/grafana", label: "Grafana Insights", icon: LineChart, tid: "nav-grafana" },
   { to: "/users", label: "User Management", icon: Users, tid: "nav-users" },
+  { to: "/hierarchy", label: "Plant Hierarchy", icon: Network, tid: "nav-hierarchy" },
 ];
 
 export default function AppShell() {
