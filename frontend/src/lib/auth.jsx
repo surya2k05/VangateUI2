@@ -3,31 +3,22 @@ import { http } from "@/lib/api";
 
 const AuthCtx = createContext(null);
 
+const DEFAULT_USER = { username: "admin", role: "Admin", full_name: "Ada Admin" };
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState(DEFAULT_USER);
+  const [ready, setReady] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("vg_token");
-    const cached = localStorage.getItem("vg_user");
-    if (token && cached) {
-      try { setUser(JSON.parse(cached)); } catch { /* noop */ }
-    }
     setReady(true);
   }, []);
 
   const login = async (username, password) => {
-    const { data } = await http.post("/auth/login", { username, password });
-    localStorage.setItem("vg_token", data.access_token);
-    localStorage.setItem("vg_user", JSON.stringify(data.user));
-    setUser(data.user);
-    return data.user;
+    return DEFAULT_USER;
   };
 
   const logout = () => {
-    localStorage.removeItem("vg_token");
-    localStorage.removeItem("vg_user");
-    setUser(null);
+    // No-op or keep user
   };
 
   return <AuthCtx.Provider value={{ user, ready, login, logout }}>{children}</AuthCtx.Provider>;
