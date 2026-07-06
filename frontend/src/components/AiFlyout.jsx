@@ -57,11 +57,27 @@ export default function AiFlyout({ open, onClose, motorId }) {
         }
       }
     } catch (e) {
-      setMessages((prev) => {
-        const copy = [...prev];
-        copy[copy.length - 1] = { role: "assistant", content: "⚠️ Error: unable to reach assistant." };
-        return copy;
-      });
+      console.warn("Chat stream failed, using client-side mock streaming response");
+      const mockReply = `Hello! I am your VangateAI Assistant. Since the backend is currently offline or not configured, I'm running in offline mock mode.
+
+For the selected motor ${motorId || "general query"}, here is the diagnostic summary:
+- **Status**: Warning / Critical (simulated)
+- **Recommendation**: Inspect the motor housing, coupling, and verify foundation bolt torque.
+
+Please check the environment settings or deploy the FastAPI backend to connect to live AI services.`;
+      
+      const words = mockReply.split(" ");
+      let acc = "";
+      for (let i = 0; i < words.length; i++) {
+        acc += words[i] + " ";
+        const currentAcc = acc;
+        await new Promise((r) => setTimeout(r, 40));
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { role: "assistant", content: currentAcc };
+          return copy;
+        });
+      }
     } finally {
       setBusy(false);
     }
