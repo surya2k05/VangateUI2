@@ -106,7 +106,7 @@ export default function PlantHierarchy() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)]" data-testid="hierarchy-page">
+    <div className="flex h-[calc(100vh-4rem)]" data-testid="hierarchy-page">
       {/* Left tree */}
       <aside className="w-72 shrink-0 overflow-auto p-3" style={{ background: "#0A1932", borderRight: "1px solid var(--vg-border)" }}>
         <div className="text-xs font-semibold uppercase tracking-wider mb-2 px-2" style={{ color: "var(--vg-muted)" }}>Plant Hierarchy</div>

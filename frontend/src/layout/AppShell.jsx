@@ -27,7 +27,7 @@ export default function AppShell() {
     <div className="min-h-screen flex flex-col" style={{ background: "var(--vg-canvas)" }} data-testid="app-shell">
       {/* Header */}
       <header
-        className="sticky top-0 z-40 h-14 flex items-center px-4 backdrop-blur-xl"
+        className="sticky top-0 z-40 h-16 flex items-center px-4 backdrop-blur-xl"
         style={{ background: "rgba(13,27,61,0.85)", borderBottom: "1px solid var(--vg-border)" }}
       >
         <button
@@ -41,7 +41,7 @@ export default function AppShell() {
           <img
             src="https://cdn.phototourl.com/free/2026-07-06-ae44d39c-3e10-4e0a-948a-289debddcf83.png"
             alt="VangateAI"
-            className="w-8 h-8 rounded-md object-contain"
+            className="w-11 h-11 rounded-md object-contain"
             data-testid="header-logo"
           />
           <div className="font-semibold tracking-wide text-white">VangateAI</div>
