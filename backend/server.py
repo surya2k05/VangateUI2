@@ -442,8 +442,11 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def on_startup():
-    await seed_all()
-    logger.info("Seed complete")
+    try:
+        await seed_all()
+        logger.info("Seed complete")
+    except Exception as e:
+        logger.warning(f"Could not connect to MongoDB for seeding: {e}. Backend API endpoints relying on MongoDB will fail, but the server has successfully started up.")
 
 @app.on_event("shutdown")
 async def on_shutdown():
