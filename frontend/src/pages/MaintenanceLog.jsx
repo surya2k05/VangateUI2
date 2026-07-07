@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { http } from "@/lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,13 +7,14 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { PLANTS, MOTORS_SEED, USERS_SEED, SAMPLE_LOGS } from "../mock/mockData";
 
 const CATEGORIES = ["Repair", "Maintenance", "Inspection", "Calibration", "Replacement"];
 
 export default function MaintenanceLog() {
-  const [plants, setPlants] = useState([]);
+  const [plants] = useState(PLANTS);
   const [motors, setMotors] = useState([]);
-  const [technicians, setTechnicians] = useState([]);
+  const [technicians] = useState(USERS_SEED);
   const [form, setForm] = useState({
     plant: "VJNRJSW",
     department: "HSM",
@@ -28,13 +28,9 @@ export default function MaintenanceLog() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    http.get("/plants").then((r) => setPlants(r.data));
-    http.get("/technicians").then((r) => setTechnicians(r.data));
-  }, []);
-
-  useEffect(() => {
     if (form.plant) {
-      http.get(`/motors?plant=${form.plant}`).then((r) => setMotors(r.data));
+      const filteredMotors = MOTORS_SEED.filter((m) => m.plant === form.plant);
+      setMotors(filteredMotors);
     }
   }, [form.plant]);
 
@@ -47,11 +43,27 @@ export default function MaintenanceLog() {
     }
     setBusy(true);
     try {
-      await http.post("/logs", form);
+      const stored = localStorage.getItem("vg_mock_logs");
+      const allLogs = stored ? JSON.parse(stored) : SAMPLE_LOGS;
+      
+      const newEntry = {
+        id: `log-${Date.now()}`,
+        plant: form.plant,
+        department: form.department,
+        motor_id: form.motor_id,
+        technician: form.technician,
+        category: form.category,
+        date: form.date,
+        notes: form.notes,
+        status: "Open",
+        created_at: new Date().toISOString(),
+      };
+      
+      localStorage.setItem("vg_mock_logs", JSON.stringify([newEntry, ...allLogs]));
       toast.success("Maintenance log saved");
       setForm({ ...form, notes: "" });
     } catch (e) {
-      toast.error(e?.response?.data?.detail || "Failed to save log");
+      toast.error("Failed to save log");
     } finally {
       setBusy(false);
     }

@@ -27,44 +27,11 @@ export default function AiFlyout({ open, onClose, motorId }) {
     setBusy(true);
 
     try {
-      const token = localStorage.getItem("vg_token");
-      const res = await fetch(`${API}/chat/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ session_id: sessionId, motor_id: motorId, message: q }),
-      });
-      if (!res.body) throw new Error("no stream");
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      let acc = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop() || "";
-        for (const p of parts) {
-          if (!p.startsWith("data:")) continue;
-          const payload = p.slice(5).trim();
-          if (payload === "[DONE]") continue;
-          acc += payload;
-          setMessages((prev) => {
-            const copy = [...prev];
-            copy[copy.length - 1] = { role: "assistant", content: acc };
-            return copy;
-          });
-        }
-      }
-    } catch (e) {
-      console.warn("Chat stream failed, using client-side mock streaming response");
-      const mockReply = `Hello! I am your VangateAI Assistant. Since the backend is currently offline or not configured, I'm running in offline mock mode.
-
-For the selected motor ${motorId || "general query"}, here is the diagnostic summary:
+      const mockReply = `Hello! I am your VangateAI Assistant. Since the backend is running in offline mock mode, I'm analyzing the telemetry for motor ${motorId || "general query"} client-side:
 - **Status**: Warning / Critical (simulated)
-- **Recommendation**: Inspect the motor housing, coupling, and verify foundation bolt torque.
+- **Recommendation**: Inspect the motor housing, alignment, coupling, and verify foundation bolt torque.
 
-Please check the environment settings or deploy the FastAPI backend to connect to live AI services.`;
+Is there anything specific in the telemetry curves or the frequency spectrum you would like me to detail?`;
       
       const words = mockReply.split(" ");
       let acc = "";
@@ -78,6 +45,8 @@ Please check the environment settings or deploy the FastAPI backend to connect t
           return copy;
         });
       }
+    } catch (e) {
+      console.error(e);
     } finally {
       setBusy(false);
     }

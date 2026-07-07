@@ -1,33 +1,45 @@
-import { useEffect, useMemo, useState } from "react";
-import { http } from "@/lib/api";
+import { useMemo, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { MOTORS_SEED, FAULTS_SEED } from "../mock/mockData";
 
 const STATUS_COLORS = { healthy: "#2DC4B6", warning: "#F4A822", critical: "#C0392B" };
 const STATUS_LABEL = { healthy: "Healthy", warning: "Warning", critical: "Critical" };
 
 export default function MultiMotor() {
-  const [motors, setMotors] = useState([]);
   const [motorF, setMotorF] = useState("all");
   const [statusF, setStatusF] = useState("all");
   const [faultF, setFaultF] = useState("all");
   const [page, setPage] = useState(1);
   const perPage = 8;
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (statusF !== "all") params.append("status_f", statusF);
-    if (faultF !== "all") params.append("fault", faultF);
-    http.get(`/motors?${params.toString()}`).then((r) => setMotors(r.data));
-  }, [statusF, faultF]);
+  // Enrich motors local list
+  const enrichedMotors = useMemo(() => {
+    return MOTORS_SEED.map((m) => {
+      const f = FAULTS_SEED.find((x) => x.motor_id === m.motor_id);
+      return {
+        ...m,
+        recent_fault: f ? f.fault_type : "-",
+        last_updated: f ? f.timestamp.slice(0, 19).replace("T", " ") : "-"
+      };
+    });
+  }, []);
 
-  const faults = useMemo(
-    () => Array.from(new Set(motors.map((m) => m.recent_fault).filter((v) => v && v !== "-"))),
-    [motors]
+  const faultsList = useMemo(
+    () => Array.from(new Set(enrichedMotors.map((m) => m.recent_fault).filter((v) => v && v !== "-"))),
+    [enrichedMotors]
   );
 
-  const filtered = motors.filter((m) => motorF === "all" || m.motor_id === motorF);
+  const filtered = useMemo(() => {
+    return enrichedMotors.filter((m) => {
+      const matchMotor = motorF === "all" || m.motor_id === motorF;
+      const matchStatus = statusF === "all" || m.status === statusF;
+      const matchFault = faultF === "all" || m.recent_fault === faultF;
+      return matchMotor && matchStatus && matchFault;
+    });
+  }, [enrichedMotors, motorF, statusF, faultF]);
+
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 
@@ -40,16 +52,16 @@ export default function MultiMotor() {
 
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Select value={motorF} onValueChange={setMotorF}>
+        <Select value={motorF} onValueChange={(val) => { setMotorF(val); setPage(1); }}>
           <SelectTrigger className="bg-[#0D1B3D] border-[#8799BA]/30 text-white" data-testid="filter-motor">
             <SelectValue placeholder="Motor" />
           </SelectTrigger>
           <SelectContent className="bg-[#0D1B3D] border-[#8799BA]/30 text-white">
             <SelectItem value="all">All Motors</SelectItem>
-            {motors.map((m) => <SelectItem key={m.motor_id} value={m.motor_id}>{m.motor_id}</SelectItem>)}
+            {enrichedMotors.map((m) => <SelectItem key={m.motor_id} value={m.motor_id}>{m.motor_id}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={statusF} onValueChange={setStatusF}>
+        <Select value={statusF} onValueChange={(val) => { setStatusF(val); setPage(1); }}>
           <SelectTrigger className="bg-[#0D1B3D] border-[#8799BA]/30 text-white" data-testid="filter-status">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -60,13 +72,13 @@ export default function MultiMotor() {
             <SelectItem value="critical">Critical</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={faultF} onValueChange={setFaultF}>
+        <Select value={faultF} onValueChange={(val) => { setFaultF(val); setPage(1); }}>
           <SelectTrigger className="bg-[#0D1B3D] border-[#8799BA]/30 text-white" data-testid="filter-fault">
             <SelectValue placeholder="Fault" />
           </SelectTrigger>
           <SelectContent className="bg-[#0D1B3D] border-[#8799BA]/30 text-white">
             <SelectItem value="all">All Faults</SelectItem>
-            {faults.map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+            {faultsList.map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { http } from "@/lib/api";
+import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, AlertTriangle, ShieldAlert, Clock } from "lucide-react";
+import { PLANTS, MOTORS_SEED, SAMPLE_LOGS } from "../mock/mockData";
 
 const COLORS = { healthy: "#2DC4B6", warning: "#F4A822", critical: "#C0392B" };
 
@@ -40,18 +40,22 @@ function StatusCounter({ label, value, color, icon: Icon, blink, tid }) {
 
 export default function Overview() {
   const [plant, setPlant] = useState("VJNRJSW");
-  const [plants, setPlants] = useState([]);
-  const [ov, setOv] = useState({ healthy: 0, warning: 0, critical: 0, total: 0 });
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
-    http.get("/plants").then((r) => setPlants(r.data));
-  }, []);
-
-  useEffect(() => {
-    http.get(`/overview?plant=${plant}`).then((r) => setOv(r.data));
-    http.get("/logs").then((r) => setLogs(r.data.slice(0, 8)));
+    const stored = localStorage.getItem("vg_mock_logs");
+    const allLogs = stored ? JSON.parse(stored) : SAMPLE_LOGS;
+    setLogs(allLogs.slice(0, 8));
   }, [plant]);
+
+  // Compute overview stats from local mockData
+  const plantMotors = MOTORS_SEED.filter((m) => m.plant === plant);
+  const healthy = plantMotors.filter((m) => m.status === "healthy").length;
+  const warning = plantMotors.filter((m) => m.status === "warning").length;
+  const critical = plantMotors.filter((m) => m.status === "critical").length;
+  const total = plantMotors.length;
+
+  const ov = { healthy, warning, critical, total };
 
   const donut = [
     { name: "Healthy", value: ov.healthy, key: "healthy" },
@@ -72,7 +76,7 @@ export default function Overview() {
             <SelectValue placeholder="Select Plant" />
           </SelectTrigger>
           <SelectContent className="bg-[#0D1B3D] border-[#8799BA]/30 text-white">
-            {plants.map((p) => (
+            {PLANTS.map((p) => (
               <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
             ))}
           </SelectContent>

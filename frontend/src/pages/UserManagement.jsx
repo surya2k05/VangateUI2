@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { http } from "@/lib/api";
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { USERS_SEED } from "../mock/mockData";
 
 const ROLE_COLORS = { Admin: "#095FDF", Operator: "#00B4D8", Technician: "#2DC4B6", Analyst: "#F4A822" };
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([]);
-  useEffect(() => { http.get("/users").then((r) => setUsers(r.data)); }, []);
+  const [users] = useState(USERS_SEED.map(u => ({ ...u, date_joined: u.date_joined || "2026-02-20T10:00:00" })));
 
   return (
     <div className="p-6" data-testid="users-page">

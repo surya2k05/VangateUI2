@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { http } from "@/lib/api";
+import { useEffect, useState, useMemo } from "react";
 import { Bot, Download, Pencil, Trash2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -9,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import HierarchyTree from "@/components/HierarchyTree";
 import AiFlyout from "@/components/AiFlyout";
 import { toast } from "sonner";
+import { MOTORS_SEED, FAULTS_SEED, SAMPLE_LOGS, getMockTrend, getMockFFT } from "../mock/mockData";
 
 const STATUS = { healthy: "#2DC4B6", warning: "#F4A822", critical: "#C0392B" };
 const SEV = { Low: "#2DC4B6", Moderate: "#F4A822", High: "#F4A822", Warning: "#F4A822", Critical: "#C0392B" };
@@ -77,17 +77,49 @@ export default function PlantHierarchy() {
   const [velFeat, setVelFeat] = useState("rms");
   const [aiOpen, setAiOpen] = useState(false);
 
-  useEffect(() => {
-    http.get("/hierarchy").then((r) => setTree(r.data));
+  // Compute hierarchy tree locally
+  const localTree = useMemo(() => {
+    const treeObj = {};
+    MOTORS_SEED.forEach((m) => {
+      const p = treeObj[m.plant] || (treeObj[m.plant] = { id: m.plant, name: m.plant, departments: {} });
+      const d = p.departments[m.department] || (p.departments[m.department] = { id: m.department, name: m.department, areas: {} });
+      const a = d.areas[m.area] || (d.areas[m.area] = { id: m.area, name: m.area, gateways: {} });
+      const g = a.gateways[m.gateway] || (a.gateways[m.gateway] = { id: m.gateway, name: m.gateway, motors: [] });
+      g.motors.push(m);
+    });
+    const flatten = (node, key) => {
+      node[key] = Object.values(node[key]);
+      node[key].forEach((child) => {
+        if (child.departments) flatten(child, "departments");
+        if (child.areas) flatten(child, "areas");
+        if (child.gateways) flatten(child, "gateways");
+      });
+    };
+    const root = { plants: treeObj };
+    flatten(root, "plants");
+    return root.plants;
   }, []);
 
   useEffect(() => {
+    setTree(localTree);
+  }, [localTree]);
+
+  useEffect(() => {
     if (!motorId) return;
-    http.get(`/motors/${motorId}`).then((r) => setMotor(r.data));
-    http.get(`/telemetry/trend/${motorId}?feature=${accelFeat}`).then((r) => setTrend(r.data));
-    http.get(`/telemetry/fft/${motorId}`).then((r) => setFft(r.data));
-    http.get(`/faults?motor_id=${motorId}`).then((r) => setFaults(r.data));
-    http.get(`/logs?motor_id=${motorId}`).then((r) => setLogs(r.data));
+    
+    const m = MOTORS_SEED.find((x) => x.motor_id === motorId) || MOTORS_SEED[0];
+    setMotor(m);
+    
+    setTrend(getMockTrend(motorId, accelFeat));
+    setFft(getMockFFT(motorId));
+    
+    const motorFaults = FAULTS_SEED.filter((f) => f.motor_id === motorId);
+    setFaults(motorFaults);
+    
+    const stored = localStorage.getItem("vg_mock_logs");
+    const allLogs = stored ? JSON.parse(stored) : SAMPLE_LOGS;
+    const motorLogs = allLogs.filter((l) => l.motor_id === motorId);
+    setLogs(motorLogs);
   }, [motorId, accelFeat]);
 
   const downloadReport = () => {
@@ -99,8 +131,11 @@ export default function PlantHierarchy() {
     toast.success("Report downloaded");
   };
 
-  const deleteLog = async (id) => {
-    await http.delete(`/logs/${id}`);
+  const deleteLog = (id) => {
+    const stored = localStorage.getItem("vg_mock_logs");
+    const allLogs = stored ? JSON.parse(stored) : SAMPLE_LOGS;
+    const updated = allLogs.filter((x) => x.id !== id);
+    localStorage.setItem("vg_mock_logs", JSON.stringify(updated));
     setLogs((l) => l.filter((x) => x.id !== id));
     toast.success("Log deleted");
   };
